@@ -1,1 +1,2 @@
-*.hcl linguist-vendored
+*.hcl linguist-detectable=false
+*.tf linguist-detectable=false
