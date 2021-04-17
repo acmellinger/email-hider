@@ -1,1 +1,1 @@
-*.hcl linguist-detectable=false
+*.hcl linguist-vendored
