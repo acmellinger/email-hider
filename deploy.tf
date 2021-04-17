@@ -66,15 +66,20 @@ resource "aws_lambda_permission" "lambda_permission" {
 resource "aws_apigatewayv2_api" "api" {
   name          = "email-hider-api"
   protocol_type = "HTTP"
+  cors_configuration {
+    allow_headers = ["content-type"]
+    allow_methods = ["POST"]
+    allow_origins = var.cors_origins
+  }
 }
 
 resource "aws_apigatewayv2_integration" "integration" {
   api_id           = aws_apigatewayv2_api.api.id
   integration_type = "AWS_PROXY"
 
-  connection_type           = "INTERNET"
-  integration_method        = "POST"
-  integration_uri           = aws_lambda_function.lambda.invoke_arn
+  connection_type    = "INTERNET"
+  integration_method = "POST"
+  integration_uri    = aws_lambda_function.lambda.invoke_arn
 }
 
 resource "aws_apigatewayv2_route" "route" {
@@ -85,7 +90,7 @@ resource "aws_apigatewayv2_route" "route" {
 }
 
 resource "aws_apigatewayv2_stage" "stage" {
-  api_id = aws_apigatewayv2_api.api.id
-  name   = "$default"
+  api_id      = aws_apigatewayv2_api.api.id
+  name        = "$default"
   auto_deploy = true
 }
