@@ -1,4 +1,3 @@
 #!/bin/zsh
-GOOS=linux go build main.go
-zip function.zip main
+zip function.zip emailhider.go go.mod go.sum
 terraform apply -var-file="secrets.tfvars"
