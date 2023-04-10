@@ -7,7 +7,8 @@ variable "env" {
   sensitive = true
 }
 
-variable "cors_origins" {
-  type    = list(any)
-  default = []
+variable "project" {
+  type      = string
+  default   = "example-project-123"
+  sensitive = true
 }
