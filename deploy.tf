@@ -69,4 +69,5 @@ resource "google_cloud_run_service_iam_binding" "default" {
   members = [
     "allUsers"
   ]
+  depends_on = [google_cloudfunctions2_function.function]
 }
