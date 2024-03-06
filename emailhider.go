@@ -6,6 +6,7 @@ import (
 	"log"
 	"net/http"
 	"os"
+	"strings"
 	"time"
 
 	"github.com/GoogleCloudPlatform/functions-framework-go/functions"
@@ -77,17 +78,19 @@ func handleRequest(w http.ResponseWriter, r *http.Request) {
 	}
 
 	if body.Site != "" {
-		email := os.Getenv(body.Site)
+		escapedSite := strings.Replace(body.Site, "\n", "", -1)
+		escapedSite = strings.Replace(escapedSite, "\r", "", -1)
+		email := os.Getenv(escapedSite)
 		if email == "" {
 			// site provided was not found
-			log.Println("Error: " + body.Site + " site not available")
+			log.Println("Error: " + escapedSite + " site not available")
 
 			http.Error(w, "Validation failed.", http.StatusForbidden)
 			return
 		}
 
 		response := Response{Email: email}
-		fmt.Println(body.Site + ": " + response.Email)
+		fmt.Println(escapedSite + ": " + response.Email)
 
 		// all is good, return the email address
 		w.Header().Set("Content-Type", "application/json")
