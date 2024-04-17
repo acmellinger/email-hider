@@ -2,7 +2,7 @@ terraform {
   required_providers {
     google = {
       source  = "hashicorp/google"
-      version = ">= 5.19.0"
+      version = ">= 5.25.0"
     }
   }
 }
@@ -34,7 +34,7 @@ resource "google_cloudfunctions2_function" "function" {
   description = "email-hider"
 
   build_config {
-    runtime     = "go120"
+    runtime     = "go122"
     entry_point = "handleRequest" #
     source {
       storage_source {
