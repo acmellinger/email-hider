@@ -1,0 +1,3 @@
+name = "emailhider"
+main = "turnstile.js"
+compatibility_date = "2025-12-06"
