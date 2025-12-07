@@ -99,3 +99,4 @@ secrets.tfvars
 main
 *.zip
 *.old
+.wrangler/*
