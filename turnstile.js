@@ -59,12 +59,23 @@ export default {
     // Passing the client's IP is good practice for Turnstile
     formData.append("remoteip", request.headers.get("CF-Connecting-IP"));
 
-    const turnstileResp = await fetch(verifyUrl, {
-      method: "POST",
-      body: formData,
-    });
-    
-    const turnstileResult = await turnstileResp.json();
+    let turnstileResult;
+    try {
+      const turnstileResp = await fetch(verifyUrl, {
+        method: "POST",
+        body: formData,
+      });
+      if (!turnstileResp.ok) {
+        throw new Error(`Turnstile API returned ${turnstileResp.status}`);
+      }
+      turnstileResult = await turnstileResp.json();
+    } catch (err) {
+      console.log("Error: Turnstile API request failed: " + err.message);
+      return new Response("Validation service error.", {
+        status: 503,
+        headers: corsHeaders,
+      });
+    }
 
     if (!turnstileResult.success) {
       console.log("Error: Turnstile validation failed", turnstileResult["error-codes"]);
@@ -77,9 +88,10 @@ export default {
     // 7. Validate Site and Retrieve Email
     if (body.Site) {
       const escapedSite = body.Site.replace(/[\n\r]/g, "");
-      
-      // Access Environment Variable using the sanitized key
-      const email = env[escapedSite];
+
+      // Prefix lookup ensures only SITE_* env vars are accessible,
+      // preventing injection of secret variable names (e.g. TURNSTILE_SECRET).
+      const email = env["SITE_" + escapedSite];
 
       if (!email) {
         console.log(`Error: ${escapedSite} site not available`);
@@ -89,7 +101,7 @@ export default {
         });
       }
 
-      console.log(`${escapedSite}: ${email}`);
+      console.log(`Email retrieved for site: ${escapedSite}`);
 
       return new Response(JSON.stringify({ email: email }), {
         status: 200,
